@@ -1,120 +1,117 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(BottomNavApp());
-}
+void main() => runApp(const CatalogApp());
 
-class BottomNavApp extends StatelessWidget {
+class CatalogApp extends StatelessWidget {
+  const CatalogApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bottom Navigation Lab',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MainScreen(),
+      title: 'Product Catalog',
+      theme: ThemeData(primarySwatch: Colors.orange),
+      home: const CatalogScreen(),
     );
   }
-}class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+class Product {
+  final String name;
+  final String price;
+  final String imageUrl;
+  final Color color;
+  const Product(
+      {required this.name,
+      required this.price,
+      required this.imageUrl,
+      required this.color});
+}
 
-  final List<Widget> _screens = [
-    HomeScreen(),
-    DetailsScreen(),
-    FavoritesScreen(),
-    ProfileScreen(),
+class CatalogScreen extends StatelessWidget {
+  const CatalogScreen({super.key});
+
+  final List<Product> products = const [
+    Product(
+        name: 'Coffee Mug',
+        price: '\$12.99',
+        imageUrl: 'https://picsum.photos/id/1/100/100',
+        color: Colors.brown),
+    Product(
+        name: 'Notebook',
+        price: '\$5.99',
+        imageUrl: 'https://picsum.photos/id/2/100/100',
+        color: Colors.blue),
+    Product(
+        name: 'Pen Set',
+        price: '\$8.49',
+        imageUrl: 'https://picsum.photos/id/3/100/100',
+        color: Colors.green),
+    Product(
+        name: 'Backpack',
+        price: '\$49.99',
+        imageUrl: 'https://picsum.photos/id/4/100/100',
+        color: Colors.red),
+    Product(
+        name: 'Headphones',
+        price: '\$89.99',
+        imageUrl: 'https://picsum.photos/id/5/100/100',
+        color: Colors.grey),
+    Product(
+        name: 'Smart Watch',
+        price: '\$199.99',
+        imageUrl: 'https://picsum.photos/id/6/100/100',
+        color: Colors.black),
   ];
 
-  void _onTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Bottom Nav App")),
-
-      body: _screens[_currentIndex],
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTapped,
-        type: BottomNavigationBarType.fixed,
-
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
+      appBar: AppBar(title: const Text('Catalog')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: "Details",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: "Favorites",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
-        ],
-      ),
-    );
-  }
-}class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        child: Text("Go to Details"),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DetailsScreen()),
-          );
-        },
-      ),
-    );
-  }
-}class DetailsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Details Screen")),
-
-      body: Center(
-        child: ElevatedButton(
-          child: Text("Go Back"),
-          onPressed: () {
-            Navigator.pop(context);
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final product = products[index];
+            return Card(
+              color: product.color.withValues(alpha: 0.1),
+              child: InkWell(
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('You selected ${product.name}'))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Image.network(product.imageUrl, fit: BoxFit.cover),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            product.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            product.price,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         ),
-      ),
-    );
-  }
-}class FavoritesScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        "Favorites Screen",
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-  }
-}class ProfileScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        "Profile Screen",
-        style: TextStyle(fontSize: 20),
       ),
     );
   }
